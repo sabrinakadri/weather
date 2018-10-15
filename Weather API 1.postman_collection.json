@@ -1,0 +1,257 @@
+{
+	"info": {
+		"_postman_id": "d66a4d83-2ada-6319-7645-6701b9deaef1",
+		"name": "Weather API 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET Weather by Random Id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "df549667-5fe5-49d7-963f-edbd5caabaa3",
+						"exec": [
+							"var cityIds = [",
+							"    5128638, //New York",
+							"    5506956, //Las Vegas",
+							"    4887398, //Chicago",
+							"    3882428, //Los Angeles",
+							"    1723862, //Boston",
+							"    5809844, //Seattle",
+							"];",
+							"//Get a random number between 1-6",
+							"var randomCityId = Math.floor((Math.random() * 6) +1);",
+							"",
+							"//Set an environemnt variable to the value of the random city id from array",
+							"postman.setEnvironmentVariable(\"CITYID\", cityIds[randomCityId])",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "74706800-8b13-418b-a059-98e062d9c743",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"",
+							"postman.setEnvironmentVariable(\"CITYNAME\" ,jsonData.name)",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://api.openweathermap.org/data/2.5/forecast?id=524901&APPID=79950350764552f47cdf7b30490cb972",
+					"protocol": "http",
+					"host": [
+						"api",
+						"openweathermap",
+						"org"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"forecast"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "524901"
+						},
+						{
+							"key": "APPID",
+							"value": "79950350764552f47cdf7b30490cb972"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Weather by City Name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b44277b4-6155-48f0-87e5-93c188832e86",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.test(\"City Name matches Request'\", function () {",
+							"    var contains = true;",
+							"    var cityFromResponse = postman.getEnvironmentVariable(\"CITYNAME\");",
+							"    ",
+							"    ",
+							"    if(jsonData.name == cityFromResponse) {",
+							"        contains = true;",
+							"        ",
+							"    }",
+							"    else",
+							"    {",
+							"        console.log(\"Unexpected city\");",
+							"    }",
+							"    ",
+							"    pm.expect(contains).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Contains object: 'weather'\", function () {",
+							"    var contains = false;",
+							"    for (var key in jsonData)  {",
+							"        if (key == \"weather\") {",
+							"            contains = true;",
+							"        }",
+							"     }",
+							"    pm.expect(contains).to.be.true;",
+							"",
+							"});   ",
+							"",
+							"pm.test(\"Contains string: 'rain' \", function () {",
+							"    var contains = false;",
+							"    var expected = 'rain';",
+							"    pm.expect(pm.response.text()).to.not.include(expected);",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"DOES NOT Contain string: 'snow'\", function () {",
+							"    var contains = false;",
+							"    var expected = 'snow';",
+							"    pm.expect(pm.response.text()).to.not.include(expected);",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://api.openweathermap.org/data/2.5/weather?q=Moscow&APPID=79950350764552f47cdf7b30490cb972",
+					"protocol": "http",
+					"host": [
+						"api",
+						"openweathermap",
+						"org"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "Moscow"
+						},
+						{
+							"key": "APPID",
+							"value": "79950350764552f47cdf7b30490cb972"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Weather by City Name FAIL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b44277b4-6155-48f0-87e5-93c188832e86",
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.test(\"City Name matches Request'\", function () {",
+							"    var contains = false;",
+							"    var cityFromResponse = postman.getEnvironmentVariable(\"CITYNAME\");",
+							"    ",
+							"    ",
+							"    if(jsonData.name == cityFromResponse) {",
+							"        contains = true;",
+							"        ",
+							"    }",
+							"    else",
+							"    {",
+							"        console.log(\"Unexpected city\");",
+							"    }",
+							"    ",
+							"    pm.expect(contains).to.be.true;",
+							"});",
+							"",
+							"pm.test(\"Contains object: 'weather'\", function () {",
+							"    var contains = false;",
+							"    for (var key in jsonData)  {",
+							"        if (key == \"weather\") {",
+							"            contains = true;",
+							"        }",
+							"     }",
+							"    pm.expect(contains).to.be.true;",
+							"",
+							"});   ",
+							"",
+							"pm.test(\"Contains string: 'rain' \", function () {",
+							"    var contains = false;",
+							"    var expected = 'rain';",
+							"    pm.expect(pm.response.text()).to.not.include(expected);",
+							"    ",
+							"});",
+							"",
+							"pm.test(\"DOES NOT Contain string: 'snow'\", function () {",
+							"    var contains = false;",
+							"    var expected = 'snow';",
+							"    pm.expect(pm.response.text()).to.not.include(expected);",
+							"    ",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "http://api.openweathermap.org/data/2.5/weather?q=Moscow&APPID=79950350764552f47cdf7b30490cb972",
+					"protocol": "http",
+					"host": [
+						"api",
+						"openweathermap",
+						"org"
+					],
+					"path": [
+						"data",
+						"2.5",
+						"weather"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "Moscow"
+						},
+						{
+							"key": "APPID",
+							"value": "79950350764552f47cdf7b30490cb972"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
